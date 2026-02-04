@@ -1,14 +1,14 @@
 /*
  * This file is part of the AzerothCore Project. See AUTHORS file for Copyright information
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
  * more details.
  *
  * You should have received a copy of the GNU General Public License along
@@ -23,6 +23,8 @@
 
 #define DataHeader "EOE"
 #define EyeOfEternityScriptName "instance_eye_of_eternity"
+
+uint32 const EncounterCount = 1;
 
 enum Objects
 {
@@ -46,15 +48,14 @@ enum NPCs
     NPC_HOVER_DISK              = 30248,
     NPC_ARCANE_OVERLOAD         = 30282,
     NPC_SURGE_OF_POWER          = 30334,
-    NPC_WYRMREST_SKYTALON       = 30161,
     NPC_STATIC_FIELD            = 30592,
     NPC_ALEXSTRASZA             = 32295,
 };
 
 enum Data
 {
+    DATA_MALYGOS                = 0,
     DATA_IRIS_ACTIVATED,
-    DATA_ENCOUNTER_STATUS,
     DATA_SET_IRIS_INACTIVE,
     DATA_HIDE_IRIS_AND_PORTAL,
     DATA_MALYGOS_GUID,
@@ -71,14 +72,13 @@ enum eSpells
     SPELL_TELEPORT_VISUAL               = 52096,
 
     SPELL_SCION_ARCANE_BARRAGE          = 56397,
-    SPELL_ARCANE_SHOCK_N                = 57058,
-    SPELL_ARCANE_SHOCK_H                = 60073,
+    SPELL_ARCANE_SHOCK                  = 57058,
     SPELL_HASTE                         = 57060,
 
     SPELL_ALEXSTRASZA_GIFT              = 61028,
+    SPELL_SUMMON_RED_DRAGON_BUDDY       = 56070,
+    SPELL_RIDE_RED_DRAGON               = 56072
 };
-
-#define SPELL_ARCANE_SHOCK              DUNGEON_MODE(SPELL_ARCANE_SHOCK_N, SPELL_ARCANE_SHOCK_H)
 
 enum eAchiev
 {
@@ -87,6 +87,11 @@ enum eAchiev
     ACHIEV_CRITERIA_A_POKE_IN_THE_EYE_10    = 7174,
     ACHIEV_CRITERIA_A_POKE_IN_THE_EYE_25    = 7175,
     ACHIEV_YOU_DONT_HAVE_AN_ENTERNITY_EVENT = 20387,
+};
+
+enum EoEMisc : uint32
+{
+    EVENT_IRIS_ACTIVATED                    = 20158
 };
 
 /*** POSITIONS/WAYPOINTS BELOW ***/
@@ -107,20 +112,11 @@ const Position Phase2NorthPos = {837.22f, 1301.676f, 296.10f, M_PI};
 
 const uint32 MalygosIntroIntervals[] = {18000, 19000, 21000, 18000, 15000};
 
-class EoEDrakeEnterVehicleEvent : public BasicEvent
-{
-public:
-    EoEDrakeEnterVehicleEvent(Creature& owner, ObjectGuid playerGUID) : _owner(owner), _playerGUID(playerGUID) { }
-    bool Execute(uint64 /*eventTime*/, uint32 /*updateTime*/) override;
-private:
-    Creature& _owner;
-    ObjectGuid _playerGUID;
-};
-
 template <class AI, class T>
 inline AI* GetEyeOfEternityAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, EyeOfEternityScriptName);
 }
+#define RegisterEoECreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetEyeOfEternityAI)
 
 #endif
